@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>起名字表单</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 5px;
+            margin-top: 5px;
+        }
+        button {
+            display: block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #3d3dd3;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #response {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>起名字表单</h1>
+    <form id="name-form">
+        <label>
+            性别：
+            <select id="gender">
+                <option value="男">男</option>
+                <option value="女">女</option>
+            </select>
+        </label>
+        <label>
+            姓氏：<input type="text" id="surname">
+        </label>
+        <label>
+            出生日期：<input type="date" id="birth_date">
+        </label>
+        <label>
+            出生时间：<input type="time" id="birth_time">
+        </label>
+        <label>
+            名字几个字：
+            <select id="name_length">
+                <option value="2">2</option>
+                <option value="3">3</option>
+            </select>
+        </label>
+        <label>
+            期望和寓意，包含的品质：<textarea id="expectation"></textarea>
+        </label>
+        <label>
+            特别喜欢的诗句或者特别喜欢的名字：<input type="text" id="favorite_poem_or_name">
+        </label>
+        <button type="submit">提交</button>
+    </form>
+    <div id="response"></div>
+
+<script>
+    document.getElementById('name-form').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const gender = document.getElementById('gender').value;
+        const surname = document.getElementById('surname').value;
+        const birth_date = document.getElementById('birth_date').value;
+        const birth_time = document.getElementById('birth_time').value;
+        const name_length = document.getElementById('name_length').value;
+        const expectation = document.getElementById('expectation').value;
+        const favorite_poem_or_name = document.getElementById('favorite_poem_or_name').value;
+
+        const response = await fetch('/get_name', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                gender,
+                surname,
+                birth_date: birth_date + ' ' + birth_time,
+                name_length,
+                expectation,
+                favorite_poem_or_name
+            })
+        });
+
+        const result = await response.json();
+        document.getElementById('response').textContent = '建议的名字：' + result.name_suggestions;
+
+    });
+</script>
+</body>
+</html>
